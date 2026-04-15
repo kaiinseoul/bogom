@@ -856,13 +856,39 @@
 <script>
   var currentLang = 'en';
 
-  function showPage(id) {
+  var pageToPath = {
+    'page-home':         '/',
+    'page-about':        '/about',
+    'page-oem-lotte':    '/oem-lotte',
+    'page-oem-everland': '/oem-everland',
+    'page-oem-artbox':   '/oem-artbox',
+    'page-oem-zanmang':  '/oem-zanmang',
+    'page-char-mroolly': '/char-mroolly',
+    'page-char-toony':   '/char-toony',
+    'page-char-hunter':  '/char-hunter'
+  };
+
+  var pathToPage = {};
+  Object.keys(pageToPath).forEach(function(id) {
+    pathToPage[pageToPath[id]] = id;
+  });
+
+  function showPage(id, skipHistory) {
     document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
     document.getElementById(id).classList.add('active');
     window.scrollTo(0, 0);
     applyLang(currentLang);
     matchTaglineWidth();
+    if (!skipHistory) {
+      var path = pageToPath[id] || '/';
+      history.pushState({ pageId: id }, '', path);
+    }
   }
+
+  window.addEventListener('popstate', function(e) {
+    var id = (e.state && e.state.pageId) ? e.state.pageId : 'page-home';
+    showPage(id, true);
+  });
 
   function setLang(lang) {
     currentLang = lang;
@@ -910,7 +936,17 @@
 
   // init
   applyLang('en');
-  window.addEventListener('load', matchTaglineWidth);
+  window.addEventListener('load', function() {
+    matchTaglineWidth();
+    // URL에 맞는 페이지로 진입
+    var initPath = window.location.pathname;
+    var initId = pathToPage[initPath] || 'page-home';
+    if (initId !== 'page-home') {
+      showPage(initId, true);
+    }
+    // 현재 페이지를 history 스택 최하단에 등록
+    history.replaceState({ pageId: initId }, '', initPath);
+  });
 </script>
 </body>
 </html>
