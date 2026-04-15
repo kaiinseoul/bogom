@@ -101,6 +101,28 @@
   }
   .btn-outline:hover { background: var(--brown); color: #fff; }
 
+  /* CARDS */
+  .card {
+    border-radius: 12px; overflow: hidden; cursor: pointer;
+    position: relative; background: var(--beige);
+    box-shadow: 0 2px 12px rgba(74,55,40,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(74,55,40,0.15); }
+  .card .photo-placeholder { height: 220px; border-radius: 0; margin: 0; }
+  .card-info { padding: 16px 18px; }
+  .card-info h3 { font-size: 17px; margin-bottom: 4px; }
+  .card-info p { font-size: 17px; color: #7a6255; }
+  .card-overlay {
+    position: absolute; inset: 0; background: rgba(74,55,40,0.85);
+    color: #fff; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 20px;
+    opacity: 0; transition: opacity 0.25s; text-align: center;
+  }
+  .card:hover .card-overlay { opacity: 1; }
+  .card-overlay h3 { font-size: 18px; margin-bottom: 10px; }
+  .card-overlay p { font-size: 18px; line-height: 1.6; }
+
   /* OEM TABS */
   .oem-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
   .oem-tab {
@@ -415,25 +437,6 @@
         data-en="We are a professional OEM/ODM plush toy manufacturer for 18 years combining Korean design excellence with competitive in-house production in Qingdao, China.<br><br>Our experienced product planning and design team in Korea develops trend-driven, market-oriented concepts tailored to each client's brand identity. From initial idea development and sample creation to final production, we provide fully customized solutions that meet global market demands.<br><br>With our own manufacturing facility in China, we ensure stable production capacity, strict cost control, and on-time delivery. Our integrated production system enables us to offer highly competitive pricing without compromising product quality.<br><br>We strictly comply with international safety standards and country-specific certification requirements.<br><br>Through this systematic approach, we guarantee consistent quality, safety compliance, and reliable delivery performance.<br><br>As a long-term strategic partner, we go beyond manufacturing providing comprehensive support across product planning, design, development, mass production, quality assurance, and logistics coordination."
       >당사는 18년간 봉제완구 산업에 집중해온 OEM/ODM 전문 기업으로, 한국의 기획·디자인 역량과 중국 칭다오 자체 생산 인프라를 기반으로 글로벌 시장에 제품을 공급하고 있습니다.<br><br>한국의 전문 디자인 및 상품기획 인력이 글로벌 트렌드와 시장 요구를 반영하여 차별화된 제품을 개발하며, 고객사의 브랜드 아이덴티티에 최적화된 맞춤형 솔루션을 제공합니다.<br><br>중국 현지에 보유한 자체 공장을 통해 원가 경쟁력과 안정적인 생산 능력을 확보하고 있으며, 대량 생산과 납기 관리를 체계적으로 운영합니다.<br><br>또한 각 국가별 안전 규격 및 제품 인증 요건을 철저히 준수합니다.<br><br>원자재 검사, 생산 공정 관리, 완제품 검사, 선적 전 최종 검수에 이르는 다단계 품질 관리 시스템을 통해 글로벌 수준의 품질을 보장합니다.<br><br>18년간 축적된 생산 노하우와 수출 경험을 바탕으로, 당사는 단순 제조사가 아닌 기획·디자인·개발·생산·품질·납기까지 전 과정을 책임지는 전략적 파트너로 고객과 함께 성장하고 있습니다.</p>
 
-      <!-- CERTS -->
-      <div class="section-title" style="font-size:1.3rem;margin-bottom:16px;" data-kr="인증 현황" data-en="Certifications">인증 현황</div>
-      <div class="cert-row">
-        <div class="cert-card">
-          <div class="cert-icon">🇪🇺</div>
-          <div class="cert-name">EN71</div>
-          <div class="cert-desc" data-kr="유럽 완구 안전 규격" data-en="European Toy Safety Standard">유럽 완구 안전 규격</div>
-        </div>
-        <div class="cert-card">
-          <div class="cert-icon">✅</div>
-          <div class="cert-name">CE</div>
-          <div class="cert-desc" data-kr="CE 인증" data-en="CE Certification">CE 인증</div>
-        </div>
-        <div class="cert-card">
-          <div class="cert-icon">🇯🇵</div>
-          <div class="cert-name">ST</div>
-          <div class="cert-desc" data-kr="일본 완구 안전 기준" data-en="Japan Toy Safety Standard">일본 완구 안전 기준</div>
-        </div>
-      </div>
 
       <!-- QUALITY -->
       <div class="section-title" style="font-size:1.3rem;margin-bottom:16px;" data-kr="4단계 품질관리 시스템" data-en="4-Stage Quality Control System">4단계 품질관리 시스템</div>
