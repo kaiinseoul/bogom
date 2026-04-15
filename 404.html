@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>BOGOM</title>
+  <script>
+    // GitHub Pages SPA 라우팅 처리
+    // 서브 경로로 직접 접근 시 경로를 쿼리 파라미터로 인코딩해 루트로 리다이렉트
+    var l = window.location;
+    l.replace(
+      l.protocol + '//' + l.host + '/' +
+      '?p=' + l.pathname.replace(/^\//, '').replace(/&/g, '~and~') +
+      (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+      l.hash
+    );
+  </script>
+</head>
+<body></body>
+</html>

@@ -938,8 +938,21 @@
   applyLang('en');
   window.addEventListener('load', function() {
     matchTaglineWidth();
-    // URL에 맞는 페이지로 진입
+
+    // 404.html에서 리다이렉트된 경우 ?p= 파라미터로 경로 복원
     var initPath = window.location.pathname;
+    var search = window.location.search;
+    if (search) {
+      var params = new URLSearchParams(search);
+      var redirectedPath = params.get('p');
+      if (redirectedPath) {
+        initPath = '/' + redirectedPath.replace(/~and~/g, '&');
+        var newSearch = params.get('q') ? '?' + params.get('q').replace(/~and~/g, '&') : '';
+        history.replaceState(null, null, initPath + newSearch + window.location.hash);
+      }
+    }
+
+    // URL에 맞는 페이지로 진입
     var initId = pathToPage[initPath] || 'page-home';
     if (initId !== 'page-home') {
       showPage(initId, true);
