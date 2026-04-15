@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOGOM</title>
+<link rel="icon" type="image/jpeg" href="BOGOM_LOGO.jpg">
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --red: #D94F3D;
+    --brown: #4A3728;
+    --beige: #E8C9B8;
+    --mint: #A8C4B8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--brown); }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* HEADER */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: #F5F0E8; border-bottom: 1px solid var(--beige);
+    height: 100px; display: flex; align-items: center; justify-content: center;
+    padding: 24px 24px;
+  }
+  .header-logo {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+  }
+  .header-logo img { height: 40px; display: block; background-color: #F5F0E8; mix-blend-mode: multiply; }
+  .header-tagline {
+    color: #D94F3D; font-size: 13px; font-weight: 500;
+    letter-spacing: normal; text-align: center; width: 100%;
+  }
+  .header-right {
+    position: absolute; right: 24px;
+    display: flex; gap: 8px;
+  }
+  .lang-btn {
+    background: none; border: 1px solid var(--brown); color: var(--brown);
+    padding: 4px 10px; cursor: pointer; border-radius: 4px; font-size: 13px;
+    transition: all 0.2s;
+  }
+  .lang-btn.active, .lang-btn:hover {
+    background: var(--brown); color: #fff;
+  }
+  .back-btn {
+    position: absolute; left: 24px;
+    background: none; border: none; color: var(--brown); cursor: pointer;
+    font-size: 15px; display: flex; align-items: center; gap: 6px;
+    font-weight: 600;
+  }
+  .back-btn:hover { color: var(--red); }
+  main { padding-top: 100px; }
+
+  /* HERO */
+  .hero {
+    background: var(--bg); min-height: 60vh; max-height: 60vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 24px 24px 32px;
+  }
+  .hero .photo-placeholder {
+    width: 100%; max-width: 720px; height: 200px; margin-bottom: 20px;
+    border-radius: 16px; flex-shrink: 0;
+  }
+  .hero h1 { margin-bottom: 20px; }
+  .btn-hero {
+    background: #D94F3D; color: #fff; border: none;
+    padding: 13px 34px; font-size: 15px; border-radius: 8px;
+    cursor: pointer; transition: opacity 0.2s; flex-shrink: 0;
+  }
+  .btn-hero:hover { opacity: 0.85; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.6rem); font-style: italic; color: var(--brown); margin-bottom: 24px; }
+  .btn-main {
+    background: var(--red); color: #fff; border: none; padding: 14px 36px;
+    font-size: 16px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;
+  }
+  .btn-main:hover { opacity: 0.85; }
+
+  /* SECTION COMMON */
+  section { padding: 80px 24px; max-width: 1100px; margin: 0 auto; }
+  .section-title { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 12px; color: var(--brown); }
+  .section-sub { color: #7a6255; margin-bottom: 40px; font-size: 19px; }
+  .divider { display: none; }
+  .home-section-title { color: #D85032; }
+
+  /* ABOUT BADGES */
+  .badge-row { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 32px; }
+  .badge {
+    background: var(--beige); color: var(--brown); border-radius: 20px;
+    padding: 8px 18px; font-size: 14px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .badge .icon { font-size: 18px; }
+  .btn-outline {
+    border: 2px solid var(--brown); color: var(--brown); background: none;
+    padding: 10px 28px; border-radius: 6px; cursor: pointer; font-size: 15px;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { background: var(--brown); color: #fff; }
+
+  /* OEM GRID */
+  .grid-2x2 {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+  }
+  @media(max-width: 600px) { .grid-2x2 { grid-template-columns: 1fr; } }
+
+  .card {
+    border-radius: 12px; overflow: hidden; cursor: pointer;
+    position: relative; background: var(--beige);
+    box-shadow: 0 2px 12px rgba(74,55,40,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(74,55,40,0.15); }
+  .card .photo-placeholder { height: 220px; border-radius: 0; margin: 0; }
+  .card-info { padding: 16px 18px; }
+  .card-info h3 { font-size: 17px; margin-bottom: 4px; }
+  .card-info p { font-size: 17px; color: #7a6255; }
+  .card-overlay {
+    position: absolute; inset: 0; background: rgba(74,55,40,0.85);
+    color: #fff; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 20px;
+    opacity: 0; transition: opacity 0.25s; text-align: center;
+  }
+  .card:hover .card-overlay { opacity: 1; }
+  .card-overlay h3 { font-size: 18px; margin-bottom: 10px; }
+  .card-overlay p { font-size: 18px; line-height: 1.6; }
+
+  /* COLLECTION GRID */
+  .grid-3 {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  @media(max-width: 800px) { .grid-3 { grid-template-columns: repeat(2, 1fr); } }
+  @media(max-width: 500px) { .grid-3 { grid-template-columns: 1fr; } }
+
+  /* CONTACT */
+  .contact-section {
+    background: var(--brown); color: #fff; padding: 28px 24px;
+  }
+  .contact-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  @media(max-width: 700px) { .contact-inner { grid-template-columns: 1fr; gap: 12px; } }
+  .contact-section .section-title { color: #fff; font-size: clamp(0.95rem, 1.5vw, 1.2rem); margin-bottom: 6px; }
+  .contact-section .divider { background: var(--mint); margin-bottom: 12px; }
+  .contact-email { font-size: 13px; font-weight: 700; color: var(--mint); margin-bottom: 4px; }
+  .contact-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 3px; }
+  .contact-addr { font-size: 12px; line-height: 1.65; opacity: 0.9; margin-bottom: 8px; }
+
+  /* FOOTER */
+  footer {
+    background: #2e1f14; color: #a89080; text-align: center;
+    padding: 24px; font-size: 13px;
+  }
+
+  /* PHOTO PLACEHOLDER */
+  .photo-placeholder {
+    background: var(--beige); display: flex; align-items: center;
+    justify-content: center; color: #a08070; font-size: 15px;
+    border-radius: 8px;
+  }
+
+  /* DETAIL PAGE */
+  .detail-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+  .detail-hero { display: flex; gap: 40px; margin-bottom: 60px; flex-wrap: wrap; }
+  .detail-hero-img { flex: 0 0 320px; }
+  .detail-hero-img .photo-placeholder { height: 280px; border-radius: 12px; }
+  .detail-info { flex: 1; min-width: 220px; }
+  .detail-name { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 8px; }
+  .detail-sub { font-size: 19px; color: #7a6255; margin-bottom: 20px; }
+  .detail-desc { font-size: 19px; line-height: 1.9; color: var(--brown); }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+  .tag {
+    background: var(--mint); color: var(--brown); padding: 5px 14px;
+    border-radius: 20px; font-size: 13px; font-weight: 600;
+  }
+  .photo-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  @media(max-width: 700px) { .photo-grid { grid-template-columns: repeat(2, 1fr); } }
+  .photo-grid .photo-placeholder { height: 200px; border-radius: 10px; }
+
+  /* ABOUT PAGE */
+  .about-intro { font-size: 20px; line-height: 1.9; margin-bottom: 36px; }
+  .cert-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 48px; }
+  .cert-card {
+    background: var(--beige); border-radius: 10px; padding: 20px 24px;
+    flex: 1; min-width: 180px; text-align: center;
+  }
+  .cert-icon { font-size: 32px; margin-bottom: 8px; }
+  .cert-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .cert-desc { font-size: 16px; color: #7a6255; }
+
+  .quality-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 64px; }
+  @media(max-width: 800px) { .quality-steps { grid-template-columns: repeat(2, 1fr); } }
+  .q-step {
+    background: var(--beige); border-radius: 10px; padding: 20px 16px; text-align: center;
+  }
+  .q-num { font-size: 28px; font-weight: 900; color: var(--red); margin-bottom: 8px; }
+  .q-label { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .q-desc { font-size: 16px; color: #7a6255; }
+
+  /* TIMELINE */
+  .timeline-title { font-size: clamp(1.4rem, 2.5vw, 1.8rem); font-weight: 800; margin-bottom: 48px; color: var(--brown); }
+  .timeline { position: relative; padding-left: 90px; }
+  /* Railroad track */
+  .timeline-track {
+    position: absolute; left: 18px; top: 0; bottom: 0; width: 32px; z-index: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 10px,
+      #A07850 10px, #A07850 14px
+    );
+  }
+  .timeline-track::before,
+  .timeline-track::after {
+    content: ''; position: absolute; top: 0; bottom: 0;
+    width: 5px; background: #C8A882; border-radius: 3px;
+  }
+  .timeline-track::before { left: 2px; }
+  .timeline-track::after  { right: 2px; }
+  /* Items */
+  .tl-item { position: relative; margin-bottom: 56px; min-height: 48px; z-index: 1; }
+  /* Smoke marker (2001 / 2008 / 2018.04) */
+  .tl-smoke-wrap {
+    position: absolute; left: -66px; top: -18px; z-index: 2;
+  }
+  /* Train marker (2018.11) */
+  .tl-train {
+    position: absolute; left: -88px; top: -16px; z-index: 2;
+  }
+  .tl-year { font-size: 13px; font-weight: 700; color: var(--red); margin-bottom: 5px; }
+  .tl-text { font-size: 19px; font-weight: 600; color: var(--brown); line-height: 1.6; }
+
+  /* NAV sub for home sections */
+  .section-anchor { scroll-margin-top: 80px; }
+
+  /* 모바일: 헤더 로고 이미지 크기 축소 */
+  @media (max-width: 768px) {
+    .header-logo img { height: 24px !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HOME PAGE ===== -->
+<div class="page active" id="page-home">
+  <header>
+    <div class="header-logo">
+      <img src="BOGOM_LOGO.jpg" style="height:52px;">
+      <div class="header-tagline">Plush toys &amp; accessories</div>
+    </div>
+    <div class="header-right">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('kr')">KR</button>
+    </div>
+  </header>
+  <main>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="photo-placeholder" style="width:100%;max-width:720px;height:200px;margin-bottom:20px;border-radius:16px;">[ 사진 ]</div>
+      <h1 data-kr="We Make, With Heart." data-en="We Make, With Heart.">We Make, With Heart.</h1>
+      <button class="btn-hero" onclick="document.getElementById('collection-anchor').scrollIntoView({behavior:'smooth'})" data-kr="View our work" data-en="View our work">View our work</button>
+    </div>
+
+    <!-- ABOUT US -->
+    <section class="section-anchor" id="about-anchor" style="background:#F5F0E8; max-width:100%; padding:80px 24px;">
+      <div style="max-width:1100px;margin:0 auto;">
+      <div class="section-title home-section-title" data-kr="About Us" data-en="About Us">About Us</div>
+      <div class="divider"></div>
+      <p class="section-sub" data-kr="18년 경력의 완구 전문 기업, 보곰은 자체 공장과 글로벌 인증을 통해 최고의 품질을 제공합니다." data-en="BOGOM is a toy specialist with 18 years of experience, delivering top quality through our own factory and global certifications.">18년 경력의 완구 전문 기업, 보곰은 자체 공장과 글로벌 인증을 통해 최고의 품질을 제공합니다.</p>
+      <div class="badge-row">
+        <div class="badge"><span class="icon">🏭</span><span data-kr="18년 경력" data-en="18 Years Experience">18년 경력</span></div>
+        <div class="badge"><span class="icon">🏗️</span><span data-kr="칭다오 자체 공장" data-en="Own Factory in Qingdao">칭다오 자체 공장</span></div>
+        <div class="badge"><span class="icon">🌐</span><span data-kr="글로벌 인증 보유" data-en="Global Certifications">글로벌 인증 보유</span></div>
+      </div>
+      <button class="btn-outline" onclick="showPage('page-about')" data-kr="자세히 보기" data-en="Learn More">자세히 보기</button>
+      </div>
+    </section>
+
+    <!-- OEM PARTNERS -->
+    <section style="background:#F5F0E8; max-width:100%; padding:80px 24px;">
+      <div style="max-width:1100px;margin:0 auto;">
+        <div class="section-title home-section-title" data-kr="OEM Partners" data-en="OEM Partners">OEM Partners</div>
+        <div class="divider"></div>
+        <p class="section-sub" data-kr="국내 대표 브랜드들과 함께하는 신뢰의 파트너십" data-en="Trusted partnerships with Korea's leading brands">국내 대표 브랜드들과 함께하는 신뢰의 파트너십</p>
+        <div class="grid-2x2">
+          <div class="card" onclick="showPage('page-oem-lotte')">
+            <div class="photo-placeholder" style="height:220px;">[ 사진 ]</div>
+            <div class="card-info">
+              <h3>LOTTE WORLD</h3>
+              <p data-kr="테마파크 캐릭터 완구 제조" data-en="Theme park character toy manufacturing">테마파크 캐릭터 완구 제조</p>
+            </div>
+            <div class="card-overlay">
+              <h3>LOTTE WORLD</h3>
+              <p data-kr="롯데월드의 대표 캐릭터 상품을 직접 기획·제조합니다. 오랜 협력 관계를 바탕으로 고품질 완구를 공급하고 있습니다." data-en="We plan and manufacture Lotte World's signature character goods with a long-standing partnership delivering high-quality toys.">롯데월드의 대표 캐릭터 상품을 직접 기획·제조합니다. 오랜 협력 관계를 바탕으로 고품질 완구를 공급하고 있습니다.</p>
+            </div>
+          </div>
+          <div class="card" onclick="showPage('page-oem-everland')">
+            <div class="photo-placeholder" style="height:220px;">[ 사진 ]</div>
+            <div class="card-info">
+              <h3>EVERLAND</h3>
+              <p data-kr="에버랜드 공식 완구 파트너" data-en="Official toy partner of Everland">에버랜드 공식 완구 파트너</p>
+            </div>
+            <div class="card-overlay">
+              <h3>EVERLAND</h3>
+              <p data-kr="에버랜드 공원 내 판매되는 캐릭터 봉제 완구를 제조합니다. 디테일한 품질로 방문객들의 사랑을 받고 있습니다." data-en="We manufacture plush character toys sold within Everland. Visitors love our detailed, high-quality products.">에버랜드 공원 내 판매되는 캐릭터 봉제 완구를 제조합니다. 디테일한 품질로 방문객들의 사랑을 받고 있습니다.</p>
+            </div>
+          </div>
+          <div class="card" onclick="showPage('page-oem-artbox')">
+            <div class="photo-placeholder" style="height:220px;">[ 사진 ]</div>
+            <div class="card-info">
+              <h3>ARTBOX</h3>
+              <p data-kr="감성 라이프스타일 완구 협력" data-en="Lifestyle toy collaboration">감성 라이프스타일 완구 협력</p>
+            </div>
+            <div class="card-overlay">
+              <h3>ARTBOX</h3>
+              <p data-kr="아트박스의 감성적인 캐릭터 완구 라인을 함께 개발하고 생산합니다. 트렌디한 디자인과 고품질을 동시에." data-en="We co-develop and produce Artbox's emotional character toy line — trendy design meets high quality.">아트박스의 감성적인 캐릭터 완구 라인을 함께 개발하고 생산합니다. 트렌디한 디자인과 고품질을 동시에.</p>
+            </div>
+          </div>
+          <div class="card" onclick="showPage('page-oem-zanmang')">
+            <div class="photo-placeholder" style="height:220px;">[ 사진 ]</div>
+            <div class="card-info">
+              <h3>Zanmang Loopy</h3>
+              <p data-kr="잔망루피 공식 완구 제조" data-en="Official Zanmang Loopy toy manufacturer">잔망루피 공식 완구 제조</p>
+            </div>
+            <div class="card-overlay">
+              <h3>Zanmang Loopy</h3>
+              <p data-kr="MZ세대의 아이콘 잔망루피 캐릭터 완구를 공식 제조합니다. 캐릭터의 매력을 그대로 담은 제품을 선보입니다." data-en="We officially manufacture Zanmang Loopy toys — beloved by Gen MZ — capturing every bit of the character's charm.">MZ세대의 아이콘 잔망루피 캐릭터 완구를 공식 제조합니다. 캐릭터의 매력을 그대로 담은 제품을 선보입니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OUR COLLECTION -->
+    <section class="section-anchor" id="collection-anchor" style="background:#F5F0E8; max-width:100%; padding:80px 24px;">
+      <div style="max-width:1100px;margin:0 auto;">
+      <div class="section-title home-section-title" data-kr="Our Collection" data-en="Our Collection">Our Collection</div>
+      <div class="divider"></div>
+      <p class="section-sub" data-kr="보곰이 직접 개발한 오리지널 캐릭터 컬렉션" data-en="Original character collection developed by BOGOM">보곰이 직접 개발한 오리지널 캐릭터 컬렉션</p>
+      <div class="grid-3">
+        <div class="card" onclick="showPage('page-char-mroolly')">
+          <div class="photo-placeholder" style="height:240px;">[ 사진 ]</div>
+          <div class="card-info">
+            <h3>Mr.Oolly</h3>
+            <p data-kr="곰 캐릭터" data-en="Bear Character">곰 캐릭터</p>
+          </div>
+          <div class="card-overlay">
+            <h3>Mr.Oolly</h3>
+            <p data-kr="따뜻하고 포근한 곰 캐릭터 Mr.Oolly. 부드러운 털과 큼직한 눈으로 모두의 마음을 사로잡습니다." data-en="Mr.Oolly, a warm and cozy bear character with soft fur and big eyes that captures everyone's heart.">따뜻하고 포근한 곰 캐릭터 Mr.Oolly. 부드러운 털과 큼직한 눈으로 모두의 마음을 사로잡습니다.</p>
+          </div>
+        </div>
+        <div class="card" onclick="showPage('page-char-toony')">
+          <div class="photo-placeholder" style="height:240px;">[ 사진 ]</div>
+          <div class="card-info">
+            <h3>Toony</h3>
+            <p data-kr="얼룩말 캐릭터" data-en="Zebra Character">얼룩말 캐릭터</p>
+          </div>
+          <div class="card-overlay">
+            <h3>Toony</h3>
+            <p data-kr="개성 넘치는 얼룩말 캐릭터 Toony. 흑백 스트라이프와 귀여운 표정이 특징입니다." data-en="Toony, a uniquely expressive zebra character with iconic black-and-white stripes and a charming face.">개성 넘치는 얼룩말 캐릭터 Toony. 흑백 스트라이프와 귀여운 표정이 특징입니다.</p>
+          </div>
+        </div>
+        <div class="card" onclick="showPage('page-char-hunter')">
+          <div class="photo-placeholder" style="height:240px;">[ 사진 ]</div>
+          <div class="card-info">
+            <h3>Hunter</h3>
+            <p data-kr="악어 캐릭터" data-en="Crocodile Character">악어 캐릭터</p>
+          </div>
+          <div class="card-overlay">
+            <h3>Hunter</h3>
+            <p data-kr="용감하고 씩씩한 악어 캐릭터 Hunter. 날카로운 이빨이지만 마음만은 따뜻합니다." data-en="Hunter, a brave and spirited crocodile character. Sharp teeth, but a warm heart.">용감하고 씩씩한 악어 캐릭터 Hunter. 날카로운 이빨이지만 마음만은 따뜻합니다.</p>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <div class="contact-section">
+      <div class="contact-inner">
+        <div>
+          <div class="section-title" data-kr="Contact Us" data-en="Contact Us">Contact Us</div>
+          <div class="divider"></div>
+          <div class="contact-label" data-kr="이메일" data-en="Email">이메일</div>
+          <div class="contact-email">homer@bogom.kr</div>
+          <div class="contact-label" style="margin-top:20px;" data-kr="한국 본사" data-en="Korea HQ">한국 본사</div>
+          <div class="contact-addr" data-kr="경기도 고양시 일산서구 중앙로 1456<br>SeoHyun Plaza 601 / 603" data-en="601 / 603 SeoHyun Plaza,<br>1456 Joongang-ro, Ilsan West,<br>Goyang City, Korea">경기도 고양시 일산서구 중앙로 1456<br>SeoHyun Plaza 601 / 603</div>
+        </div>
+        <div style="padding-top:64px;">
+          <div class="contact-label" data-kr="중국 공장" data-en="China Factory">중국 공장</div>
+          <div class="contact-addr" data-kr="#88 North of Huan JiaoBei St,<br>Jiaozhou, Qingdao,<br>Shandong Province, China<br>Zip 266300<br>Tel: 86-532-82299100" data-en="#88 North of Huan JiaoBei St,<br>Jiaozhou, Qingdao,<br>Shandong Province, China<br>Zip 266300<br>Tel: 86-532-82299100">#88 North of Huan JiaoBei St,<br>Jiaozhou, Qingdao,<br>Shandong Province, China<br>Zip 266300<br>Tel: 86-532-82299100</div>
+        </div>
+      </div>
+    </div>
+    <footer>© 2026 BOGOM. All rights reserved.</footer>
+  </main>
+</div>
+
+<!-- ===== ABOUT PAGE ===== -->
+<div class="page" id="page-about">
+  <header>
+    <button class="back-btn" onclick="showPage('page-home')">&#8592; <span data-kr="홈으로" data-en="Home">홈으로</span></button>
+    <div class="header-logo"><img src="BOGOM_LOGO.jpg" style="height:52px;"><div class="header-tagline">Plush toys &amp; accessories</div></div>
+    <div class="header-right">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('kr')">KR</button>
+    </div>
+  </header>
+  <main>
+    <div class="detail-wrap">
+      <div class="section-title" data-kr="About BOGOM" data-en="About BOGOM">About BOGOM</div>
+      <div class="divider"></div>
+
+      <p class="about-intro"
+        data-kr="당사는 18년간 봉제완구 산업에 집중해온 OEM/ODM 전문 기업으로, 한국의 기획·디자인 역량과 중국 칭다오 자체 생산 인프라를 기반으로 글로벌 시장에 제품을 공급하고 있습니다.<br><br>한국의 전문 디자인 및 상품기획 인력이 글로벌 트렌드와 시장 요구를 반영하여 차별화된 제품을 개발하며, 고객사의 브랜드 아이덴티티에 최적화된 맞춤형 솔루션을 제공합니다.<br><br>중국 현지에 보유한 자체 공장을 통해 원가 경쟁력과 안정적인 생산 능력을 확보하고 있으며, 대량 생산과 납기 관리를 체계적으로 운영합니다.<br><br>또한 각 국가별 안전 규격 및 제품 인증 요건을 철저히 준수합니다.<br><br>원자재 검사, 생산 공정 관리, 완제품 검사, 선적 전 최종 검수에 이르는 다단계 품질 관리 시스템을 통해 글로벌 수준의 품질을 보장합니다.<br><br>18년간 축적된 생산 노하우와 수출 경험을 바탕으로, 당사는 단순 제조사가 아닌 기획·디자인·개발·생산·품질·납기까지 전 과정을 책임지는 전략적 파트너로 고객과 함께 성장하고 있습니다."
+        data-en="We are a professional OEM/ODM plush toy manufacturer for 18 years combining Korean design excellence with competitive in-house production in Qingdao, China.<br><br>Our experienced product planning and design team in Korea develops trend-driven, market-oriented concepts tailored to each client's brand identity. From initial idea development and sample creation to final production, we provide fully customized solutions that meet global market demands.<br><br>With our own manufacturing facility in China, we ensure stable production capacity, strict cost control, and on-time delivery. Our integrated production system enables us to offer highly competitive pricing without compromising product quality.<br><br>We strictly comply with international safety standards and country-specific certification requirements.<br><br>Through this systematic approach, we guarantee consistent quality, safety compliance, and reliable delivery performance.<br><br>As a long-term strategic partner, we go beyond manufacturing providing comprehensive support across product planning, design, development, mass production, quality assurance, and logistics coordination."
+      >당사는 18년간 봉제완구 산업에 집중해온 OEM/ODM 전문 기업으로, 한국의 기획·디자인 역량과 중국 칭다오 자체 생산 인프라를 기반으로 글로벌 시장에 제품을 공급하고 있습니다.<br><br>한국의 전문 디자인 및 상품기획 인력이 글로벌 트렌드와 시장 요구를 반영하여 차별화된 제품을 개발하며, 고객사의 브랜드 아이덴티티에 최적화된 맞춤형 솔루션을 제공합니다.<br><br>중국 현지에 보유한 자체 공장을 통해 원가 경쟁력과 안정적인 생산 능력을 확보하고 있으며, 대량 생산과 납기 관리를 체계적으로 운영합니다.<br><br>또한 각 국가별 안전 규격 및 제품 인증 요건을 철저히 준수합니다.<br><br>원자재 검사, 생산 공정 관리, 완제품 검사, 선적 전 최종 검수에 이르는 다단계 품질 관리 시스템을 통해 글로벌 수준의 품질을 보장합니다.<br><br>18년간 축적된 생산 노하우와 수출 경험을 바탕으로, 당사는 단순 제조사가 아닌 기획·디자인·개발·생산·품질·납기까지 전 과정을 책임지는 전략적 파트너로 고객과 함께 성장하고 있습니다.</p>
+
+      <!-- CERTS -->
+      <div class="section-title" style="font-size:1.3rem;margin-bottom:16px;" data-kr="인증 현황" data-en="Certifications">인증 현황</div>
+      <div class="cert-row">
+        <div class="cert-card">
+          <div class="cert-icon">🇪🇺</div>
+          <div class="cert-name">EN71</div>
+          <div class="cert-desc" data-kr="유럽 완구 안전 규격" data-en="European Toy Safety Standard">유럽 완구 안전 규격</div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-icon">✅</div>
+          <div class="cert-name">CE</div>
+          <div class="cert-desc" data-kr="CE 인증" data-en="CE Certification">CE 인증</div>
+        </div>
+        <div class="cert-card">
+          <div class="cert-icon">🇯🇵</div>
+          <div class="cert-name">ST</div>
+          <div class="cert-desc" data-kr="일본 완구 안전 기준" data-en="Japan Toy Safety Standard">일본 완구 안전 기준</div>
+        </div>
+      </div>
+
+      <!-- QUALITY -->
+      <div class="section-title" style="font-size:1.3rem;margin-bottom:16px;" data-kr="4단계 품질관리 시스템" data-en="4-Stage Quality Control System">4단계 품질관리 시스템</div>
+      <div class="quality-steps" style="margin-bottom:64px;">
+        <div class="q-step">
+          <div class="q-num">01</div>
+          <div class="q-label" data-kr="원자재 검사" data-en="Raw material inspection">원자재 검사</div>
+          <div class="q-desc" data-kr="입고 단계에서 원자재 품질 전수 검사" data-en="Full inspection of all materials upon receipt">입고 단계에서 원자재 품질 전수 검사</div>
+        </div>
+        <div class="q-step">
+          <div class="q-num">02</div>
+          <div class="q-label" data-kr="생산 공정 관리" data-en="In-line production monitoring">생산 공정 관리</div>
+          <div class="q-desc" data-kr="각 공정별 품질 기준 준수 모니터링" data-en="Quality checks at each production stage">각 공정별 품질 기준 준수 모니터링</div>
+        </div>
+        <div class="q-step">
+          <div class="q-num">03</div>
+          <div class="q-label" data-kr="완제품 검사" data-en="Final product inspection">완제품 검사</div>
+          <div class="q-desc" data-kr="완성된 제품의 전량 외관 및 기능 검사" data-en="Visual and functional inspection of finished goods">완성된 제품의 전량 외관 및 기능 검사</div>
+        </div>
+        <div class="q-step">
+          <div class="q-num">04</div>
+          <div class="q-label" data-kr="선적 전 최종 검수" data-en="Pre-shipment inspection">선적 전 최종 검수</div>
+          <div class="q-desc" data-kr="출하 직전 AQL 기준 샘플링 검수" data-en="AQL-based sampling before shipment">출하 직전 AQL 기준 샘플링 검수</div>
+        </div>
+      </div>
+
+      <!-- HISTORY TIMELINE -->
+      <div class="timeline-title" data-kr="Our History" data-en="Our History">Our History</div>
+      <div class="timeline" id="timeline">
+        <div class="timeline-track"></div>
+
+        <!-- 2001 -->
+        <div class="tl-item">
+          <div class="tl-smoke-wrap">
+            <svg width="28" height="52" viewBox="0 0 28 52" fill="none">
+              <circle cx="14" cy="46" r="7"   fill="#D3C4B0"/>
+              <circle cx="16" cy="30" r="5.5" fill="#D3C4B0" opacity="0.75"/>
+              <circle cx="12" cy="17" r="4"   fill="#D3C4B0" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="tl-year">2001. 02</div>
+          <div class="tl-text" data-kr="바나나트레인 회사 설립" data-en="Banana Train Co., Ltd. Founded">바나나트레인 회사 설립</div>
+        </div>
+
+        <!-- 2008 -->
+        <div class="tl-item">
+          <div class="tl-smoke-wrap">
+            <svg width="28" height="52" viewBox="0 0 28 52" fill="none">
+              <circle cx="14" cy="46" r="7"   fill="#D3C4B0"/>
+              <circle cx="16" cy="30" r="5.5" fill="#D3C4B0" opacity="0.75"/>
+              <circle cx="12" cy="17" r="4"   fill="#D3C4B0" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="tl-year">2008. 07</div>
+          <div class="tl-text" data-kr="중국 칭다오 사무소 설치" data-en="Qingdao, China Office Established">중국 칭다오 사무소 설치</div>
+        </div>
+
+        <!-- 2018 Apr -->
+        <div class="tl-item">
+          <div class="tl-smoke-wrap">
+            <svg width="28" height="52" viewBox="0 0 28 52" fill="none">
+              <circle cx="14" cy="46" r="7"   fill="#D3C4B0"/>
+              <circle cx="16" cy="30" r="5.5" fill="#D3C4B0" opacity="0.75"/>
+              <circle cx="12" cy="17" r="4"   fill="#D3C4B0" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="tl-year">2018. 04</div>
+          <div class="tl-text" data-kr="중국 칭다오 법인 설립<br><small style='font-weight:400;color:#7a6255;'>Qingdao Shurong ChengJin Co., Ltd.</small>" data-en="Qingdao Subsidiary Established<br><small style='font-weight:400;color:#7a6255;'>Qingdao Shurong ChengJin Co., Ltd.</small>">중국 칭다오 법인 설립<br><small style='font-weight:400;color:#7a6255;'>Qingdao Shurong ChengJin Co., Ltd.</small></div>
+        </div>
+
+        <!-- 2018 Nov — TRAIN -->
+        <div class="tl-item">
+          <div class="tl-train">
+            <svg width="70" height="45" viewBox="0 0 70 45" fill="none" overflow="visible">
+              <!-- Chimney smoke (#D3C4B0, 3 circles) -->
+              <circle cx="8"  cy="8"  r="3"   fill="#D3C4B0"/>
+              <circle cx="13" cy="4"  r="4"   fill="#D3C4B0" opacity="0.75"/>
+              <circle cx="19" cy="1"  r="5"   fill="#D3C4B0" opacity="0.5"/>
+
+              <!-- Chimney -->
+              <rect x="5"  y="10" width="5"  height="9"  rx="1.5" fill="#D94F3D"/>
+              <!-- Chimney cap -->
+              <rect x="3"  y="9"  width="9"  height="3"  rx="1"   fill="#b03a2a"/>
+
+              <!-- Engine roof -->
+              <rect x="2"  y="17" width="24" height="3"  rx="1.5" fill="#b03a2a"/>
+              <!-- Engine body -->
+              <rect x="2"  y="20" width="24" height="12" rx="2.5" fill="#D94F3D"/>
+              <!-- Engine window -->
+              <rect x="17" y="22" width="7"  height="7"  rx="1.5" fill="#F5F0E8" stroke="#b03a2a" stroke-width="0.8"/>
+              <!-- Engine nose -->
+              <rect x="0"  y="24" width="3"  height="5"  rx="1"   fill="#b03a2a"/>
+              <!-- Headlight -->
+              <circle cx="2" cy="22" r="1.8" fill="#F5F0E8" opacity="0.9"/>
+
+              <!-- Coupler -->
+              <rect x="26" y="24" width="4"  height="2"  rx="1"   fill="#4A3728"/>
+
+              <!-- Cargo roof -->
+              <rect x="30" y="14" width="37" height="3"  rx="1.5" fill="#b03a2a"/>
+              <!-- Cargo body -->
+              <rect x="30" y="17" width="37" height="15" rx="2.5" fill="#D94F3D"/>
+              <!-- Cargo window -->
+              <rect x="34" y="20" width="16" height="9"  rx="1.5" fill="#F5F0E8" stroke="#b03a2a" stroke-width="0.8"/>
+              <text x="35" y="28" font-size="8" font-family="serif">🍌</text>
+              <!-- Cargo end cap -->
+              <rect x="65" y="17" width="3"  height="15" rx="1.5" fill="#b03a2a"/>
+
+              <!-- Engine wheels -->
+              <circle cx="9"  cy="36" r="4.5" fill="#4A3728" stroke="#D94F3D" stroke-width="1.5"/>
+              <circle cx="9"  cy="36" r="1.8" fill="#D94F3D"/>
+              <circle cx="21" cy="36" r="4.5" fill="#4A3728" stroke="#D94F3D" stroke-width="1.5"/>
+              <circle cx="21" cy="36" r="1.8" fill="#D94F3D"/>
+
+              <!-- Cargo wheels -->
+              <circle cx="40" cy="36" r="4.5" fill="#4A3728" stroke="#D94F3D" stroke-width="1.5"/>
+              <circle cx="40" cy="36" r="1.8" fill="#D94F3D"/>
+              <circle cx="57" cy="36" r="4.5" fill="#4A3728" stroke="#D94F3D" stroke-width="1.5"/>
+              <circle cx="57" cy="36" r="1.8" fill="#D94F3D"/>
+            </svg>
+          </div>
+          <div class="tl-year">2018. 11</div>
+          <div class="tl-text" data-kr="주식회사 보곰으로 법인전환" data-en="Converted to BOGOM Co., Ltd.">주식회사 보곰으로 법인전환</div>
+        </div>
+      </div>
+    </div>
+    <footer>© 2026 BOGOM. All rights reserved.</footer>
+  </main>
+</div>
+
+<!-- ===== OEM PAGES ===== -->
+<!-- LOTTE WORLD -->
+<div class="page" id="page-oem-lotte">
+  <header>
+    <button class="back-btn" onclick="showPage('page-home')">&#8592; <span data-kr="홈으로" data-en="Home">홈으로</span></button>
+    <div class="header-logo"><img src="BOGOM_LOGO.jpg" style="height:52px;"><div class="header-tagline">Plush toys &amp; accessories</div></div>
+    <div class="header-right">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('kr')">KR</button>
+    </div>
+  </header>
+  <main>
+    <div class="detail-wrap">
+      <div class="detail-hero">
+        <div class="detail-hero-img"><div class="photo-placeholder" style="height:280px;border-radius:12px;">[ 사진 ]</div></div>
+        <div class="detail-info">
+          <div class="detail-name">LOTTE WORLD</div>
+          <div class="detail-sub" data-kr="국내 대표 테마파크 OEM 파트너" data-en="Korea's leading theme park OEM partner">국내 대표 테마파크 OEM 파트너</div>
+          <div class="tags">
+            <span class="tag" data-kr="봉제완구" data-en="Plush Toy">봉제완구</span>
+            <span class="tag" data-kr="캐릭터 MD" data-en="Character MD">캐릭터 MD</span>
+            <span class="tag" data-kr="테마파크" data-en="Theme Park">테마파크</span>
+            <span class="tag">OEM</span>
+          </div>
+          <div class="detail-desc" data-kr="롯데월드와의 파트너십을 통해 공원 내 판매되는 공식 캐릭터 완구를 기획하고 생산합니다. 어드벤처, 매직아일랜드 등 각 테마별 캐릭터를 정확한 디테일로 재현하며, 엄격한 품질 기준을 충족하는 제품만을 공급합니다." data-en="Through our partnership with Lotte World, we plan and manufacture official character toys sold in the park. We reproduce characters from each theme with precise detail and supply only products that meet strict quality standards.">롯데월드와의 파트너십을 통해 공원 내 판매되는 공식 캐릭터 완구를 기획하고 생산합니다. 어드벤처, 매직아일랜드 등 각 테마별 캐릭터를 정확한 디테일로 재현하며, 엄격한 품질 기준을 충족하는 제품만을 공급합니다.</div>
+        </div>
+      </div>
+      <div class="section-title" style="font-size:1.2rem;margin-bottom:20px;" data-kr="제품 갤러리" data-en="Product Gallery">제품 갤러리</div>
+      <div class="photo-grid">
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+      </div>
+    </div>
+    <footer>© 2026 BOGOM. All rights reserved.</footer>
+  </main>
+</div>
+
+<!-- EVERLAND -->
+<div class="page" id="page-oem-everland">
+  <header>
+    <button class="back-btn" onclick="showPage('page-home')">&#8592; <span data-kr="홈으로" data-en="Home">홈으로</span></button>
+    <div class="header-logo"><img src="BOGOM_LOGO.jpg" style="height:52px;"><div class="header-tagline">Plush toys &amp; accessories</div></div>
+    <div class="header-right">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('kr')">KR</button>
+    </div>
+  </header>
+  <main>
+    <div class="detail-wrap">
+      <div class="detail-hero">
+        <div class="detail-hero-img"><div class="photo-placeholder" style="height:280px;border-radius:12px;">[ 사진 ]</div></div>
+        <div class="detail-info">
+          <div class="detail-name">EVERLAND</div>
+          <div class="detail-sub" data-kr="에버랜드 공식 완구 파트너" data-en="Official Everland Toy Partner">에버랜드 공식 완구 파트너</div>
+          <div class="tags">
+            <span class="tag" data-kr="봉제완구" data-en="Plush Toy">봉제완구</span>
+            <span class="tag" data-kr="캐릭터 MD" data-en="Character MD">캐릭터 MD</span>
+            <span class="tag" data-kr="테마파크" data-en="Theme Park">테마파크</span>
+            <span class="tag">OEM</span>
+          </div>
+          <div class="detail-desc" data-kr="에버랜드의 공식 캐릭터 완구를 제조하는 파트너로서, 판다 로보, 쥬라기 원시전 등 다양한 테마 캐릭터를 고품질 봉제완구로 제작합니다. 방문객들에게 사랑받는 기념품을 정성껏 만들고 있습니다." data-en="As Everland's official character toy manufacturing partner, we produce a variety of themed characters — including Panda World and Zootopia — as high-quality plush toys that visitors cherish as keepsakes.">에버랜드의 공식 캐릭터 완구를 제조하는 파트너로서, 판다 로보, 쥬라기 원시전 등 다양한 테마 캐릭터를 고품질 봉제완구로 제작합니다. 방문객들에게 사랑받는 기념품을 정성껏 만들고 있습니다.</div>
+        </div>
+      </div>
+      <div class="section-title" style="font-size:1.2rem;margin-bottom:20px;" data-kr="제품 갤러리" data-en="Product Gallery">제품 갤러리</div>
+      <div class="photo-grid">
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+      </div>
+    </div>
+    <footer>© 2026 BOGOM. All rights reserved.</footer>
+  </main>
+</div>
+
+<!-- ARTBOX -->
+<div class="page" id="page-oem-artbox">
+  <header>
+    <button class="back-btn" onclick="showPage('page-home')">&#8592; <span data-kr="홈으로" data-en="Home">홈으로</span></button>
+    <div class="header-logo"><img src="BOGOM_LOGO.jpg" style="height:52px;"><div class="header-tagline">Plush toys &amp; accessories</div></div>
+    <div class="header-right">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('kr')">KR</button>
+    </div>
+  </header>
+  <main>
+    <div class="detail-wrap">
+      <div class="detail-hero">
+        <div class="detail-hero-img"><div class="photo-placeholder" style="height:280px;border-radius:12px;">[ 사진 ]</div></div>
+        <div class="detail-info">
+          <div class="detail-name">ARTBOX</div>
+          <div class="detail-sub" data-kr="감성 라이프스타일 완구 협력사" data-en="Lifestyle Toy Collaboration Partner">감성 라이프스타일 완구 협력사</div>
+          <div class="tags">
+            <span class="tag" data-kr="봉제완구" data-en="Plush Toy">봉제완구</span>
+            <span class="tag" data-kr="라이프스타일" data-en="Lifestyle">라이프스타일</span>
+            <span class="tag" data-kr="캐릭터 굿즈" data-en="Character Goods">캐릭터 굿즈</span>
+            <span class="tag">OEM</span>
+          </div>
+          <div class="detail-desc" data-kr="아트박스의 감성 캐릭터 완구 라인을 함께 기획하고 생산합니다. 트렌디한 디자인 감각과 보곰의 제조 노하우가 결합되어, 젊은 소비자들의 감성을 자극하는 라이프스타일 완구를 선보입니다." data-en="We co-plan and manufacture Artbox's emotional character toy line. The combination of trendy design sensibility and BOGOM's manufacturing know-how produces lifestyle toys that resonate with younger consumers.">아트박스의 감성 캐릭터 완구 라인을 함께 기획하고 생산합니다. 트렌디한 디자인 감각과 보곰의 제조 노하우가 결합되어, 젊은 소비자들의 감성을 자극하는 라이프스타일 완구를 선보입니다.</div>
+        </div>
+      </div>
+      <div class="section-title" style="font-size:1.2rem;margin-bottom:20px;" data-kr="제품 갤러리" data-en="Product Gallery">제품 갤러리</div>
+      <div class="photo-grid">
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+      </div>
+    </div>
+    <footer>© 2026 BOGOM. All rights reserved.</footer>
+  </main>
+</div>
+
+<!-- ZANMANG LOOPY -->
+<div class="page" id="page-oem-zanmang">
+  <header>
+    <button class="back-btn" onclick="showPage('page-home')">&#8592; <span data-kr="홈으로" data-en="Home">홈으로</span></button>
+    <div class="header-logo"><img src="BOGOM_LOGO.jpg" style="height:52px;"><div class="header-tagline">Plush toys &amp; accessories</div></div>
+    <div class="header-right">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('kr')">KR</button>
+    </div>
+  </header>
+  <main>
+    <div class="detail-wrap">
+      <div class="detail-hero">
+        <div class="detail-hero-img"><div class="photo-placeholder" style="height:280px;border-radius:12px;">[ 사진 ]</div></div>
+        <div class="detail-info">
+          <div class="detail-name">Zanmang Loopy</div>
+          <div class="detail-sub" data-kr="잔망루피 공식 완구 제조사" data-en="Official Zanmang Loopy Toy Manufacturer">잔망루피 공식 완구 제조사</div>
+          <div class="tags">
+            <span class="tag" data-kr="봉제완구" data-en="Plush Toy">봉제완구</span>
+            <span class="tag" data-kr="IP 캐릭터" data-en="IP Character">IP 캐릭터</span>
+            <span class="tag">MZ</span>
+            <span class="tag">OEM</span>
+          </div>
+          <div class="detail-desc" data-kr="MZ세대를 중심으로 폭발적인 인기를 끌고 있는 잔망루피의 공식 완구를 제조합니다. 캐릭터 고유의 개성과 귀여움을 봉제완구에 완벽하게 담아내며, 한국과 글로벌 시장 모두를 대상으로 제품을 공급하고 있습니다." data-en="We manufacture official toys for Zanmang Loopy, which has seen explosive popularity among Gen MZ. We perfectly capture the character's unique charm in plush form and supply products to both Korean and global markets.">MZ세대를 중심으로 폭발적인 인기를 끌고 있는 잔망루피의 공식 완구를 제조합니다. 캐릭터 고유의 개성과 귀여움을 봉제완구에 완벽하게 담아내며, 한국과 글로벌 시장 모두를 대상으로 제품을 공급하고 있습니다.</div>
+        </div>
+      </div>
+      <div class="section-title" style="font-size:1.2rem;margin-bottom:20px;" data-kr="제품 갤러리" data-en="Product Gallery">제품 갤러리</div>
+      <div class="photo-grid">
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+      </div>
+    </div>
+    <footer>© 2026 BOGOM. All rights reserved.</footer>
+  </main>
+</div>
+
+<!-- ===== CHARACTER PAGES ===== -->
+<!-- MR.OOLLY -->
+<div class="page" id="page-char-mroolly">
+  <header>
+    <button class="back-btn" onclick="showPage('page-home')">&#8592; <span data-kr="홈으로" data-en="Home">홈으로</span></button>
+    <div class="header-logo"><img src="BOGOM_LOGO.jpg" style="height:52px;"><div class="header-tagline">Plush toys &amp; accessories</div></div>
+    <div class="header-right">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('kr')">KR</button>
+    </div>
+  </header>
+  <main>
+    <div class="detail-wrap">
+      <div class="detail-hero">
+        <div class="detail-hero-img"><div class="photo-placeholder" style="height:280px;border-radius:12px;">[ 사진 ]</div></div>
+        <div class="detail-info">
+          <div class="detail-name">Mr.Oolly</div>
+          <div class="detail-sub" data-kr="곰 | BOGOM 오리지널 캐릭터" data-en="Bear | BOGOM Original Character">곰 | BOGOM 오리지널 캐릭터</div>
+          <div class="tags">
+            <span class="tag" data-kr="곰" data-en="Bear">곰</span>
+            <span class="tag" data-kr="따뜻함" data-en="Warmth">따뜻함</span>
+            <span class="tag" data-kr="포근함" data-en="Cozy">포근함</span>
+            <span class="tag" data-kr="오리지널" data-en="Original">오리지널</span>
+          </div>
+          <div class="detail-desc" data-kr="Mr.Oolly는 보곰이 자체 개발한 오리지널 곰 캐릭터입니다. 둥글고 포근한 체형에 큼직한 눈과 부드러운 털이 특징입니다. 언제나 따뜻한 미소를 잃지 않는 Mr.Oolly는 모든 연령대의 사람들에게 위안과 포근함을 전합니다. 곁에 있는 것만으로도 마음이 따뜻해지는 친구가 되어드립니다." data-en="Mr.Oolly is an original bear character developed by BOGOM. Characterized by a round, cozy figure with big eyes and soft fur, Mr.Oolly always wears a warm smile and brings comfort and coziness to people of all ages — a friend whose presence alone warms the heart.">Mr.Oolly는 보곰이 자체 개발한 오리지널 곰 캐릭터입니다. 둥글고 포근한 체형에 큼직한 눈과 부드러운 털이 특징입니다. 언제나 따뜻한 미소를 잃지 않는 Mr.Oolly는 모든 연령대의 사람들에게 위안과 포근함을 전합니다. 곁에 있는 것만으로도 마음이 따뜻해지는 친구가 되어드립니다.</div>
+        </div>
+      </div>
+      <div class="section-title" style="font-size:1.2rem;margin-bottom:20px;" data-kr="샘플 갤러리" data-en="Sample Gallery">샘플 갤러리</div>
+      <div class="photo-grid">
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+      </div>
+    </div>
+    <footer>© 2026 BOGOM. All rights reserved.</footer>
+  </main>
+</div>
+
+<!-- TOONY -->
+<div class="page" id="page-char-toony">
+  <header>
+    <button class="back-btn" onclick="showPage('page-home')">&#8592; <span data-kr="홈으로" data-en="Home">홈으로</span></button>
+    <div class="header-logo"><img src="BOGOM_LOGO.jpg" style="height:52px;"><div class="header-tagline">Plush toys &amp; accessories</div></div>
+    <div class="header-right">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('kr')">KR</button>
+    </div>
+  </header>
+  <main>
+    <div class="detail-wrap">
+      <div class="detail-hero">
+        <div class="detail-hero-img"><div class="photo-placeholder" style="height:280px;border-radius:12px;">[ 사진 ]</div></div>
+        <div class="detail-info">
+          <div class="detail-name">Toony</div>
+          <div class="detail-sub" data-kr="얼룩말 | BOGOM 오리지널 캐릭터" data-en="Zebra | BOGOM Original Character">얼룩말 | BOGOM 오리지널 캐릭터</div>
+          <div class="tags">
+            <span class="tag" data-kr="얼룩말" data-en="Zebra">얼룩말</span>
+            <span class="tag" data-kr="개성" data-en="Unique">개성</span>
+            <span class="tag" data-kr="유쾌함" data-en="Playful">유쾌함</span>
+            <span class="tag" data-kr="오리지널" data-en="Original">오리지널</span>
+          </div>
+          <div class="detail-desc" data-kr="Toony는 보곰이 자체 개발한 오리지널 얼룩말 캐릭터입니다. 선명한 흑백 스트라이프와 독특한 표정으로 한번 보면 잊을 수 없는 매력을 자랑합니다. 유쾌하고 장난기 넘치는 Toony는 일상에 재미와 활기를 더해주는 친구입니다." data-en="Toony is an original zebra character developed by BOGOM. With vivid black-and-white stripes and a one-of-a-kind expression, Toony leaves a lasting impression. Playful and full of spirit, Toony is the friend that adds fun and energy to everyday life.">Toony는 보곰이 자체 개발한 오리지널 얼룩말 캐릭터입니다. 선명한 흑백 스트라이프와 독특한 표정으로 한번 보면 잊을 수 없는 매력을 자랑합니다. 유쾌하고 장난기 넘치는 Toony는 일상에 재미와 활기를 더해주는 친구입니다.</div>
+        </div>
+      </div>
+      <div class="section-title" style="font-size:1.2rem;margin-bottom:20px;" data-kr="샘플 갤러리" data-en="Sample Gallery">샘플 갤러리</div>
+      <div class="photo-grid">
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+      </div>
+    </div>
+    <footer>© 2026 BOGOM. All rights reserved.</footer>
+  </main>
+</div>
+
+<!-- HUNTER -->
+<div class="page" id="page-char-hunter">
+  <header>
+    <button class="back-btn" onclick="showPage('page-home')">&#8592; <span data-kr="홈으로" data-en="Home">홈으로</span></button>
+    <div class="header-logo"><img src="BOGOM_LOGO.jpg" style="height:52px;"><div class="header-tagline">Plush toys &amp; accessories</div></div>
+    <div class="header-right">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('kr')">KR</button>
+    </div>
+  </header>
+  <main>
+    <div class="detail-wrap">
+      <div class="detail-hero">
+        <div class="detail-hero-img"><div class="photo-placeholder" style="height:280px;border-radius:12px;">[ 사진 ]</div></div>
+        <div class="detail-info">
+          <div class="detail-name">Hunter</div>
+          <div class="detail-sub" data-kr="악어 | BOGOM 오리지널 캐릭터" data-en="Crocodile | BOGOM Original Character">악어 | BOGOM 오리지널 캐릭터</div>
+          <div class="tags">
+            <span class="tag" data-kr="악어" data-en="Crocodile">악어</span>
+            <span class="tag" data-kr="용감함" data-en="Brave">용감함</span>
+            <span class="tag" data-kr="따뜻한 마음" data-en="Warm Heart">따뜻한 마음</span>
+            <span class="tag" data-kr="오리지널" data-en="Original">오리지널</span>
+          </div>
+          <div class="detail-desc" data-kr="Hunter는 보곰이 자체 개발한 오리지널 악어 캐릭터입니다. 날카로운 이빨과 거칠어 보이는 외모와 달리, 속마음은 누구보다 따뜻하고 의리 있는 친구입니다. 용감하고 씩씩한 Hunter는 어떤 어려움도 함께 헤쳐나갈 수 있는 든든한 동반자입니다." data-en="Hunter is an original crocodile character developed by BOGOM. Despite sharp teeth and a tough exterior, Hunter has the warmest heart and the strongest sense of loyalty. Brave and spirited, Hunter is the reliable companion who will face any challenge by your side.">Hunter는 보곰이 자체 개발한 오리지널 악어 캐릭터입니다. 날카로운 이빨과 거칠어 보이는 외모와 달리, 속마음은 누구보다 따뜻하고 의리 있는 친구입니다. 용감하고 씩씩한 Hunter는 어떤 어려움도 함께 헤쳐나갈 수 있는 든든한 동반자입니다.</div>
+        </div>
+      </div>
+      <div class="section-title" style="font-size:1.2rem;margin-bottom:20px;" data-kr="샘플 갤러리" data-en="Sample Gallery">샘플 갤러리</div>
+      <div class="photo-grid">
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+        <div class="photo-placeholder">[ 사진 ]</div>
+      </div>
+    </div>
+    <footer>© 2026 BOGOM. All rights reserved.</footer>
+  </main>
+</div>
+
+<script>
+  var currentLang = 'en';
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+    applyLang(currentLang);
+    matchTaglineWidth();
+  }
+
+  function setLang(lang) {
+    currentLang = lang;
+    applyLang(lang);
+  }
+
+  function applyLang(lang) {
+    document.querySelectorAll('[data-kr]').forEach(function(el) {
+      var val = el.getAttribute('data-' + lang);
+      if (val !== null) el.innerHTML = val;
+    });
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
+      btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === lang);
+    });
+    // contact addresses with innerHTML
+    document.querySelectorAll('.contact-addr[data-kr]').forEach(function(el) {
+      el.innerHTML = el.getAttribute('data-' + lang) || el.innerHTML;
+    });
+  }
+
+  function matchTaglineWidth() {
+    document.querySelectorAll('.header-logo').forEach(function(logo) {
+      var img = logo.querySelector('img');
+      var tagline = logo.querySelector('.header-tagline');
+      if (!img || !tagline) return;
+      function fit() {
+        var targetWidth = img.offsetWidth;
+        if (!targetWidth) return;
+        tagline.style.whiteSpace = 'nowrap';
+        var lo = 6, hi = 40;
+        tagline.style.fontSize = hi + 'px';
+        for (var i = 0; i < 60; i++) {
+          var mid = (lo + hi) / 2;
+          tagline.style.fontSize = mid + 'px';
+          if (tagline.scrollWidth <= targetWidth) lo = mid;
+          else hi = mid;
+          if (hi - lo < 0.1) break;
+        }
+        tagline.style.fontSize = lo + 'px';
+      }
+      if (img.complete && img.naturalWidth) fit();
+      else img.addEventListener('load', fit);
+    });
+  }
+
+  // init
+  applyLang('en');
+  window.addEventListener('load', matchTaglineWidth);
+</script>
+</body>
+</html>
