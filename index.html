@@ -57,22 +57,27 @@
 
   /* HERO */
   .hero {
-    background: var(--bg); min-height: 60vh; max-height: 60vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 24px 24px 32px;
+    position: relative; height: 500px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
   }
-  .hero .photo-placeholder {
-    width: 100%; max-width: 720px; height: 200px; margin-bottom: 20px;
-    border-radius: 16px; flex-shrink: 0;
+  .hero-img {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; object-fit: cover; object-position: center;
+  }
+  .hero-content {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; padding: 24px;
   }
   .hero h1 { margin-bottom: 20px; }
   .btn-hero {
     background: #D94F3D; color: #fff; border: none;
     padding: 13px 34px; font-size: 15px; border-radius: 8px;
-    cursor: pointer; transition: opacity 0.2s; flex-shrink: 0;
+    cursor: pointer; transition: opacity 0.2s;
   }
   .btn-hero:hover { opacity: 0.85; }
   .hero h1 { font-size: clamp(2rem, 5vw, 3.6rem); font-style: italic; color: var(--brown); margin-bottom: 24px; }
+  @media (max-width: 768px) { .hero { height: 260px; } }
   .btn-main {
     background: var(--red); color: #fff; border: none; padding: 14px 36px;
     font-size: 16px; border-radius: 6px; cursor: pointer; transition: opacity 0.2s;
@@ -296,9 +301,11 @@
   <main>
     <!-- HERO -->
     <div class="hero">
-      <div class="photo-placeholder" style="width:100%;max-width:720px;height:200px;margin-bottom:20px;border-radius:16px;">[ 사진 ]</div>
-      <h1 data-kr="We Make, With Heart." data-en="We Make, With Heart.">We Make, With Heart.</h1>
-      <button class="btn-hero" onclick="document.getElementById('collection-anchor').scrollIntoView({behavior:'smooth'})" data-kr="View our work" data-en="View our work">View our work</button>
+      <img class="hero-img" src="hero.png" alt="BOGOM hero">
+      <div class="hero-content">
+        <h1 data-kr="We Make, With Heart." data-en="We Make, With Heart.">We Make, With Heart.</h1>
+        <button class="btn-hero" onclick="document.getElementById('collection-anchor').scrollIntoView({behavior:'smooth'})" data-kr="View our work" data-en="View our work">View our work</button>
+      </div>
     </div>
 
     <!-- ABOUT US -->
